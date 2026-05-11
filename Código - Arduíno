@@ -1,0 +1,49 @@
+#include <Arduino.h>
+#include <Stepper.h>
+
+char Data;
+
+const int passosPorVolta = 2048;
+
+// Motor 1 (8, 9, 10, 11)
+Stepper motor1(passosPorVolta, 8, 10, 9, 11);
+
+// Motor 2 (4, 5, 6, 7)
+Stepper motor2(passosPorVolta, 4, 6, 5, 7);
+
+void sendData(String transmitData){
+  Serial.println(transmitData);
+}
+
+// Comunicação Serial
+void setup(){
+  Serial.begin(9600);
+
+  motor1.setSpeed(10);
+  motor2.setSpeed(10);
+}
+
+void loop(){
+  if(Serial.available()){
+    String comando = Serial.readStringUntil('\n');
+    comando.trim();
+
+    // Acionamento
+    if(comando == "0"){
+
+      int passosDestino = 1024;
+      motor1.step(passosDestino);
+
+      sendData("Lancamento realizado!");
+    }
+
+    // Preparação do lançamento
+    else{
+      int passos = comando.toInt();
+
+      motor2.step(passos);
+
+      sendData("Lançamento preparado!");
+    }
+  }
+}
